@@ -31,21 +31,53 @@ export default function Header() {
   return (
     <header className={`header ${scrolled ? "header--solid" : ""}`}>
       <div className="header__left">
-        <Link to="/" className="logo">MOVIE<span>19</span></Link>
+        <Link to="/" className="logo">
+          MOVIE<span>20</span>
+        </Link>
         <nav className="gnb">
           {MENUS.map((m) => (
-            <NavLink key={m.to} to={m.to} className={({ isActive }) => (isActive ? "active" : "")}>
+            <NavLink
+              key={m.to}
+              to={m.to}
+              className={({ isActive }) => (isActive ? "active" : "")}
+            >
               {m.label}
             </NavLink>
           ))}
         </nav>
       </div>
       <div className="header__right">
-        <button className="icon-btn" aria-label="검색" onClick={() => setSearchOpen((v) => !v)}>
+        <button
+          className="icon-btn"
+          aria-label="검색"
+          onClick={() => setSearchOpen((v) => !v)}
+        >
           {searchOpen ? (
-            <svg viewBox="0 0 24 24" width="26" height="26"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+            <svg viewBox="0 0 24 24" width="26" height="26">
+              <path
+                d="M6 6l12 12M18 6L6 18"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+            </svg>
           ) : (
-            <svg viewBox="0 0 24 24" width="26" height="26"><circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" fill="none" /><path d="M20 20l-4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+            <svg viewBox="0 0 24 24" width="26" height="26">
+              <circle
+                cx="11"
+                cy="11"
+                r="7"
+                stroke="currentColor"
+                strokeWidth="2"
+                fill="none"
+              />
+              <path
+                d="M20 20l-4-4"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+            </svg>
           )}
         </button>
         <div className="profile" aria-label="프로필" />
