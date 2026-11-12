@@ -17,6 +17,42 @@ npm run dev      # 백엔드(8000) + 프론트(5173) 동시 실행, Ctrl+C 로 �
 - API 문서: http://localhost:8000/docs
 - 따로 실행하려면 `npm run dev:back` / `npm run dev:front`
 
+## 3. 배포 (Docker + AWS EC2 + GitHub Actions)
+
+```
+git push (master) ─▶ GitHub Actions ─▶ 빌드 검사 ─▶ SSH ─▶ EC2: scripts/deploy.sh
+                                                         └─ git pull → docker compose up -d --build → 헬스 체크
+```
+
+| 컨테이너 | 내용 |
+|---|---|
+| `frontend` | Vite 빌드 결과를 nginx 가 서빙(:80), `/api/*` 는 `backend:8000` 으로 프록시 |
+| `backend` | FastAPI + uvicorn(:8000, 외부 비공개), TMDB 키는 `backend/.env` 로 주입 |
+
+### 평소 배포
+`master` 브랜치에 push 하면 자동 배포됩니다. Actions 탭 > **Deploy to EC2** > *Run workflow* 로 수동 실행도 가능합니다.
+
+### 최초 서버 구축 (1회)
+1. EC2(Ubuntu 24.04) 생성, 보안 그룹에서 22/80 포트 허용
+2. 서버 설정
+   ```bash
+   ssh -i 키.pem ubuntu@<EC2_IP> 'bash -s -- https://github.com/<USER>/<REPO>.git' < scripts/server-setup.sh
+   ```
+3. TMDB 키 복사 (GitHub 에는 올리지 않음)
+   ```bash
+   ssh -i 키.pem ubuntu@<EC2_IP> 'umask 077; cat > ~/app/backend/.env' < backend/.env
+   ```
+4. 첫 배포: `ssh -i 키.pem ubuntu@<EC2_IP> 'bash ~/app/scripts/deploy.sh'`
+5. GitHub 저장소 Secrets 등록: `EC2_HOST`(IP), `EC2_USER`(`ubuntu`), `EC2_SSH_KEY`(개인키 내용)
+
+### 서버에서 자주 쓰는 명령
+```bash
+cd ~/app
+docker compose ps                 # 컨테이너 상태
+docker compose logs -f backend    # 백엔드 로그
+bash scripts/deploy.sh <커밋SHA>   # 특정 커밋으로 되돌리기(롤백)
+```
+
 ## API
 | 경로 | 설명 |
 |---|---|
